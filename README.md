@@ -106,6 +106,11 @@ Format:
 
 The processor's architecture is composed of several modular functional units, each designed to handle a specific stage of the instruction cycle within a single clock period. These blocks are interconnected via a 16-bit data bus and a centralized control signals network to ensure synchronized execution. From the initial instruction fetch in the Program Counter to the final write-back in the Register File, every module plays a specialized role in maintaining the integrity of the data path.
 
+![processor](Images/processor.png)
+
+![processor-exp](Images/processor_expanded.png)
+
+
 **List of Hardware Modules**
 - Program Counter (PC): Manages the 8-bit instruction address.
 - Instruction Memory (IMEM): Stores the 256-word instruction set.
@@ -118,6 +123,9 @@ The processor's architecture is composed of several modular functional units, ea
 
 ### 1. Program Counter - [prog_cntr.v](Source%20Files/prog_cntr.v)
 
+![pc](Images/PC_sch.png)
+
+
 - `clk`: Master system clock.
 - `rst`: Asynchronous reset; resets the address to 8'h00 on a high signal.
 - `load_en`: Control signal from the Jump Decoder. If 1, the PC loads the load_val.
@@ -126,10 +134,14 @@ The processor's architecture is composed of several modular functional units, ea
 
 ### 2. Instruction Memory - [instr_mem.v](Source%20Files/instr_mem.v)
 
+![imem](Images/instr_mem.png)
+
 - `addr [7:0]`: Input address from the Program Counter.
 - `instruction [15:0]`: 16-bit instruction word stored at the current address.
 
 ### 3. Register File - [reg_file.v](Source%20Files/reg_file.v)
+
+![rf](Images/reg_file_sch.png)
 
 - `clk`: System clock for synchronous write operations.
 - `s1 [3:0]`: Address for the first source register (read).
@@ -142,6 +154,8 @@ The processor's architecture is composed of several modular functional units, ea
 
 ### 4. Arithmetic Logic Unit - [alu.v](Source%20Files/alu.v)
 
+![alu](Images/alu_sch.png)
+
 - `A [15:0]`: Primary 16-bit operand (usually from s1val).
 - `B [15:0]`: Secondary 16-bit operand (usually from s2val_m).
 - `opc [3:0]`: ALU opcode determining the specific mathematical or logical operation.
@@ -149,6 +163,8 @@ The processor's architecture is composed of several modular functional units, ea
 - `C`: Status flag; functions as a Carry bit for arithmetic or a Zero-check flag for Jumps.
 
 ### 5. Control Unit - [ctrl_unit.v](Source%20Files/ctrl_unit.v)
+
+![cu](Images/cu_sch.png)
 
 - `opcode [3:0]`: The 4-bit opcode extracted from instruction[15:12].
 - `aluopc [3:0]`: Translated 4-bit code sent to the ALU to trigger specific operations.
@@ -162,6 +178,8 @@ The processor's architecture is composed of several modular functional units, ea
 
 ### 6. Data Memory - [data_mem.v](Source%20Files/data_mem.v)
 
+![dm](Images/data_mem_sch.png)
+
 - `clk`: System clock for synchronous writes.
 - `addr [7:0]`: 8-bit memory address (from the instruction immediate).
 - `wen`: Write-enable signal from the Control Unit.
@@ -169,6 +187,8 @@ The processor's architecture is composed of several modular functional units, ea
 - `dout [15:0]`: 16-bit data read from the memory at the specified address.
 
 ### 7. Jump Decoder - [jump_dec.v](Source%20Files/jump_dec.v)
+
+![jd](Images/jump_dec_sch.png)
 
 - `en`: Enable signal from the Control Unit (jen).
 - `check`: Status bit from the ALU (C).
@@ -178,17 +198,43 @@ The processor's architecture is composed of several modular functional units, ea
 
 ### 8. Route Multiplexer - [route_mux.v](Source%20Files/route_mux.v)
 
+![rm](Images/route_mux.png)
+
 - `sel [1:0]`: 2-bit selection input from the Control Unit.
 - `in1, in2, in3, in4 [15:0]`: Data sources including ALU/Memory results, register moves, and byte-immediates.
 - `out [15:0]`: The final 16-bit word sent to the Register File din. 
 
 ### 9. Sub-Multiplexer - [sub_mux.v](Source%20Files/sub_mux.v)
 
+![sm](Images/sub_mux.png)
+
 - `sel`: 1-bit selection signal.
 - `in1, in2 [N-1:0]`: Parameterized inputs (used for both 4-bit address and 16-bit data routing).
 - `out [N-1:0]`: The selected output path based on the control signal.
 
 ---
+
+# Simulation Results
+
+A testbench [processor_tb.v](Source%20Files/processor_tb.v) simulates the hardware. It initializes the registers and memory to zero, loads a program from an external file called program.txt into the instruction memory, and applies a reset signal to begin execution.
+To verify the functionality of the processor, a [test program](Source%20Files/program.txt) was written in hexadecimal and loaded into the instruction memory using a TXT file. The program covers all major instruction types including arithmetic, logical, memory, shift, and control flow operations.
+
+### Test Program Coverage
+
+The following operations were successfully verified:
+
+- Immediate loading (lower and higher byte)
+- Arithmetic operations: ADD, SUB, MUL, DIV
+- Logical operations: AND, OR, XOR
+- Register-to-register data movement
+- Memory operations: LOAD and STORE
+- Shift operations: Left Shift and Right Shift
+- Conditional jump (Jump if Zero)
+
+![sims](Images/processor_sims.png)
+
+The test program initializes registers with given values, performs operations, and stores results into data memory for verification.
+
 
 
 
