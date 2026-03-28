@@ -1,0 +1,45 @@
+8084 // move immediate value 0x22 to lower byte of register R0
+9048 // move immediate value 0x22 to higher byte of register R0
+
+8127 // move immediate value 0x55 to lower byte of register R1
+9172 // move immediate value 0x55 to higher byte of register R1
+
+0210 // Addition R2 <- R1 + R0
+B200 // Store value from R2 to data memory at 00 address
+
+1310 // Subtraction R3 <- R1 - R0
+B301 // Store value from R3 to data memory at 01 address
+
+
+2410 // Multiply R4[15:0] <- R1[7:0] * R0[7:0]
+B402 // Store value from R4 to data memory at 02 address
+
+
+3510 // Division R5 <- R1 / R0
+B503 // Store value from R5 to data memory at 03 address
+
+
+4610 // XOR R6 <- R1 ^ R0
+B604 // Store value from R6 to data memory at 04 address
+
+
+5710 // AND R7 <- R1 & R0
+B705 // Store value from R7 to data memory at 05 address
+
+
+6810 // OR R8 <- R1 | R0
+B806 // Store value from R8 to data memory at 06 address
+
+
+7040 // Move data in R4 to R0
+
+A106 // Load value at 06 address of data memory to R1
+A205 // Load value at 05 address of data memory to R2
+
+C314 // Shift left the value in R1 by 4 bits and store in R3
+D426 // Shift right the value in R2 by 6 bits and store in R4
+
+8000 // move immediate value 0x00 to lower byte of register R0
+9000 // move immediate value 0x00 to higher byte of register R0
+
+E015 // If value in R0 is zero jump execution to address 21 in Instruction memory
