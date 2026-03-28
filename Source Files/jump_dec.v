@@ -23,37 +23,3 @@ always@(*) begin
     end
 end
 endmodule
-
-
-
-/*
-always@(*) begin
-    if(en) begin
-        if(ctrl) begin
-            if(check) begin
-                addr_out = 0;
-                load_en = 0;
-            end
-            else begin
-                load_en = 1'b1;
-                addr_out = addr_in;
-            end
-        end
-        else begin
-            if(check) begin
-                load_en = 1'b1;
-                addr_out = addr_in;
-            end
-            else begin
-                addr_out = 0;
-                load_en = 0;
-            end
-        end
-    end
-    else begin
-        addr_out = 0;
-        load_en = 0;
-    end
-end
-endmodule
-*/
