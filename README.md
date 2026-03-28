@@ -118,7 +118,77 @@ The processor's architecture is composed of several modular functional units, ea
 
 ### 1. Program Counter - [prog_cntr.v](Source%20Files/prog_cntr.v)
 
+- `clk`: Master system clock.
+- `rst`: Asynchronous reset; resets the address to 8'h00 on a high signal.
+- `load_en`: Control signal from the Jump Decoder. If 1, the PC loads the load_val.
+- `load_val [7:0]`: The 8-bit target jump address extracted from the instruction.
+- `addr [7:0]`: The current instruction address output to Instruction Memory.
 
+### 2. Instruction Memory - [instr_mem.v](Source%20Files/instr_mem.v)
+
+- `addr [7:0]`: Input address from the Program Counter.
+- `instruction [15:0]`: 16-bit instruction word stored at the current address.
+
+### 3. Register File - [reg_file.v](Source%20Files/reg_file.v)
+
+- `clk`: System clock for synchronous write operations.
+- `s1 [3:0]`: Address for the first source register (read).
+- `s2 [3:0]`: Address for the second source register (read).
+- `rd [3:0]`: Address for the destination register (write).
+- `wen`: Write-enable signal; data is written to register rd only when this is high.
+- `din [15:0]`: 16-bit data input from the route_mux to be stored in the register file.
+- `s1val [15:0]`: Asynchronous output of the data stored in register s1.
+- `s2val [15:0]`: Asynchronous output of the data stored in register s2.
+
+### 4. Arithmetic Logic Unit - [alu.v](Source%20Files/alu.v)
+
+- `A [15:0]`: Primary 16-bit operand (usually from s1val).
+- `B [15:0]`: Secondary 16-bit operand (usually from s2val_m).
+- `opc [3:0]`: ALU opcode determining the specific mathematical or logical operation.
+- `RES [15:0]`: The 16-bit result of the operation.
+- `C`: Status flag; functions as a Carry bit for arithmetic or a Zero-check flag for Jumps.
+
+### 5. Control Unit - [ctrl_unit.v](Source%20Files/ctrl_unit.v)
+
+- `opcode [3:0]`: The 4-bit opcode extracted from instruction[15:12].
+- `aluopc [3:0]`: Translated 4-bit code sent to the ALU to trigger specific operations.
+- `msel [1:0]`: Selection bits for the route_mux (chooses write-back source).
+- `wen`: Global write-enable for the Register File.
+- `data_en`: Write-enable for the Data Memory (active during STORE).
+- `jen`: Jump enable signal; tells the Jump Decoder to evaluate the branch condition.
+- `dsm`: Selects between the instruction field s2 or the ds field for register addressing.
+- `ops2m`: Selects between register data or immediate values for the ALU's second operand.
+- `wdsel`: Write-data selection; chooses between ALU result or Data Memory output.
+
+### 6. Data Memory - [data_mem.v](Source%20Files/data_mem.v)
+
+- `clk`: System clock for synchronous writes.
+- `addr [7:0]`: 8-bit memory address (from the instruction immediate).
+- `wen`: Write-enable signal from the Control Unit.
+- `din [15:0]`: 16-bit data to be stored (from register s2val).
+- `dout [15:0]`: 16-bit data read from the memory at the specified address.
+
+### 7. Jump Decoder - [jump_dec.v](Source%20Files/jump_dec.v)
+
+- `en`: Enable signal from the Control Unit (jen).
+- `check`: Status bit from the ALU (C).
+- `addr_in [7:0]`: The potential jump target address from the instruction.
+- `addr_out [7:0]`: The address sent to the PC (equals addr_in if jump is taken).
+- `load_en`: Output to the PC triggering a branch when high.
+
+### 8. Route Multiplexer - [route_mux.v](Source%20Files/route_mux.v)
+
+- `sel [1:0]`: 2-bit selection input from the Control Unit.
+- `in1, in2, in3, in4 [15:0]`: Data sources including ALU/Memory results, register moves, and byte-immediates.
+- `out [15:0]`: The final 16-bit word sent to the Register File din. 
+
+### 9. Sub-Multiplexer - [sub_mux.v](Source%20Files/sub_mux.v)
+
+- `sel`: 1-bit selection signal.
+- `in1, in2 [N-1:0]`: Parameterized inputs (used for both 4-bit address and 16-bit data routing).
+- `out [N-1:0]`: The selected output path based on the control signal.
+
+---
 
 
 
