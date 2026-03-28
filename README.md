@@ -1,6 +1,9 @@
 # Table of Contents
 
 - [Introduction](#introduction)
+- [Instruction Classification and ISA Architecture](instruction-classification-and-isa-architecture)
+- [Core Architectural Blocks](core-architectural-blocks)
+- [Simulation Results](simulation-results)
 ---
 # Introduction
 
